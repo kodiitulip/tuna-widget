@@ -5,7 +5,7 @@ import { useWindowDimensions } from '@/hooks/use-window-dimentions';
 import { cn, formatMsToMinutes } from '@/lib/utils';
 import { PauseIcon, PlayIcon } from 'lucide-react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { notFound, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Loading from './loading';
 
@@ -41,7 +41,10 @@ const Home = () => {
   const { width } = useWindowDimensions();
 
   useInterval(async () => {
-    const data = await fetch('http://localhost:1608/').then((res) => res.json());
+    const data = await fetch('http://localhost:1608/').then((res) => {
+      if (!res.ok) notFound();
+      return res.json();
+    });
     setMusicData(data);
   }, 1000);
 
