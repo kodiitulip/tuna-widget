@@ -41,13 +41,15 @@ const Home = () => {
   const { width } = useWindowDimensions();
 
   useInterval(async () => {
-    const data = await fetch('http://localhost:1608/')
-      .then((res) => {
-        if (!res.ok) notFound();
-        return res.json();
-      }, notFound)
-      .catch(notFound);
-    setMusicData(data);
+    try {
+      const res = await fetch('http://localhost:1608/', { mode: 'no-cors' });
+      if (!res.ok) throw new Error('Could not find server', { cause: res.statusText });
+      const data = await res.json();
+      setMusicData(data);
+    } catch (err) {
+      console.error(err);
+      notFound();
+    }
   }, 1000);
 
   const Icon = isPaused ? PauseIcon : PlayIcon;
