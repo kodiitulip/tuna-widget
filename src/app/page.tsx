@@ -2,7 +2,7 @@
 
 import { useInterval } from '@/hooks/use-interval';
 import { cn, formatMsToMinutes } from '@/lib/utils';
-import { LoaderIcon, PauseIcon, PlayIcon, RotateCwIcon } from 'lucide-react';
+import { PauseIcon, PlayIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
