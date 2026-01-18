@@ -1,11 +1,13 @@
 'use client';
 
 import { useInterval } from '@/hooks/use-interval';
+import { useWindowDimensions } from '@/hooks/use-window-dimentions';
 import { cn, formatMsToMinutes } from '@/lib/utils';
 import { PauseIcon, PlayIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Loading from './loading';
 
 type MusicMetadata = {
   album: string;
@@ -29,7 +31,6 @@ type MusicMetadata = {
 const Home = () => {
   const params = useSearchParams();
   const [musicData, setMusicData] = useState<MusicMetadata>();
-  // const musicData = useRef<MusicMetadata>(null);
   const [isRight, setIsRight] = useState<boolean>(false);
   const [animationPlayState, setAnimationPlayState] = useState<'paused' | 'running'>('paused');
   const [songTitle, setSongTitle] = useState<string>('');
@@ -37,11 +38,11 @@ const Home = () => {
   const [songCoverArt, setSongCoverArt] = useState<string>('');
   const [songProgress, setSongProgress] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(true);
+  const { width } = useWindowDimensions();
 
   useInterval(async () => {
     const data = await fetch('http://localhost:1608/').then((res) => res.json());
     setMusicData(data);
-    // musicData.current = data;
   }, 1000);
 
   const Icon = isPaused ? PauseIcon : PlayIcon;
@@ -66,6 +67,8 @@ const Home = () => {
     load();
   }, [params, musicData]);
 
+  if (!songTitle) return <Loading />;
+
   return (
     <div className='flex gap-4'>
       {songCoverArt && (
@@ -77,31 +80,37 @@ const Home = () => {
           height={72}
         />
       )}
-      <div className='inline-flex flex-1 flex-col overflow-hidden'>
+      <div className='inline-flex flex-1 flex-col justify-between overflow-hidden'>
         <h1
           className='animate-scroll-half-text inline-flex w-min text-xl font-bold whitespace-nowrap'
           style={{ animationPlayState }}>
           {songTitle}
-          <div className='w-30' />
-          {songTitle}
-          <div className='w-30' />
+          {songTitle.length > width * 0.7 && (
+            <>
+              <div className='w-30' />
+              {songTitle}
+              <div className='w-30' />
+            </>
+          )}
         </h1>
         <p className='text-plate-subtle line-clamp-1 w-min text-sm whitespace-nowrap'>{songArtists}</p>
-        <div className='text-theme-love flex flex-1 items-center'>
-          <Icon
-            size={16}
-            className='mr-2'
-          />
-          <div className='bg-plate-overlay h-1 flex-1'>
-            <div
-              className='h-1 bg-current'
-              style={{ width: `${songProgress}%` }}
+        {songTitle && (
+          <div className='text-theme-love flex items-center'>
+            <Icon
+              size={16}
+              className='mr-2'
             />
+            <div className='bg-plate-overlay h-1 flex-1'>
+              <div
+                className='h-1 bg-current'
+                style={{ width: `${songProgress}%` }}
+              />
+            </div>
+            <p className='mx-2 text-sm'>
+              {formatMsToMinutes(musicData?.progress ?? 0)} / {formatMsToMinutes(musicData?.duration ?? 0)}
+            </p>
           </div>
-          <p className='mx-2 text-sm'>
-            {formatMsToMinutes(musicData?.progress ?? 0)} / {formatMsToMinutes(musicData?.duration ?? 0)}
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -5,8 +5,7 @@ const nextConfig: NextConfig = {
   output: 'export',
   images: { unoptimized: true },
   basePath: '/tuna-widget',
-  assetPrefix: '/tuna-widget',
-  distDir: '/tuna-widget'
+  assetPrefix: '/tuna-widget'
 };
 
 export default nextConfig;
