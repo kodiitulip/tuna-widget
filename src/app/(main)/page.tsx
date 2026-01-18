@@ -5,7 +5,7 @@ import { cn, formatMsToMinutes } from '@/lib/utils';
 import { LoaderIcon, PauseIcon, PlayIcon, RotateCwIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type MusicMetadata = {
   album: string;
