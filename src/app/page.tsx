@@ -38,6 +38,7 @@ const Home = () => {
   const [songCoverArt, setSongCoverArt] = useState<string>('');
   const [songProgress, setSongProgress] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(true);
+  const [isDown, setIsDown] = useState<boolean>(false);
   const { width } = useWindowDimensions();
 
   useInterval(async () => {
@@ -47,7 +48,7 @@ const Home = () => {
         console.error('Error: ', error);
         console.log('Server Not Found');
       });
-    if (!data || !data.title) notFound();
+    setIsDown(!data || !data.title);
     setMusicData(data);
   }, 1000);
 
@@ -73,6 +74,7 @@ const Home = () => {
     load();
   }, [params, musicData, width]);
 
+  if (isDown) notFound();
   if (!songTitle) return <Loading />;
 
   const titleElement = (
