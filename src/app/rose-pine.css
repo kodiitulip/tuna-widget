@@ -63,12 +63,12 @@
 
   & .left-title,
   & .right-title {
-    @apply bg-plate-base text-plate-text absolute -top-2 px-1 text-xs;
+    @apply bg-plate-base absolute -top-2 px-1 text-xs;
     @variant moon {
-      @apply bg-moon-plate-base text-moon-plate-subtle;
+      @apply bg-moon-plate-base;
     }
     @variant dawn {
-      @apply bg-dawn-plate-base text-dawn-plate-subtle;
+      @apply bg-dawn-plate-base;
     }
   }
 

@@ -32,8 +32,8 @@ const Home = () => {
   // const musicData = useRef<MusicMetadata>(null);
   const [isRight, setIsRight] = useState<boolean>(false);
   const [animationPlayState, setAnimationPlayState] = useState<'paused' | 'running'>('paused');
-  const [songTitle, setSongTitle] = useState<string>('...');
-  const [songArtists, setSongArtists] = useState<string[]>(['...']);
+  const [songTitle, setSongTitle] = useState<string>('');
+  const [songArtists, setSongArtists] = useState<string[]>(['']);
   const [songCoverArt, setSongCoverArt] = useState<string>('');
   const [songProgress, setSongProgress] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(true);
@@ -44,7 +44,7 @@ const Home = () => {
     // musicData.current = data;
   }, 1000);
 
-  const Icon = !songCoverArt ? RotateCwIcon : isPaused ? PauseIcon : PlayIcon;
+  const Icon = isPaused ? PauseIcon : PlayIcon;
 
   useEffect(() => {
     const load = () => {
@@ -67,54 +67,40 @@ const Home = () => {
   }, [params, musicData]);
 
   return (
-    <div className='bg-plate-base size-full p-3'>
-      <div className='terminal-window border-theme-love m-0 flex size-full gap-4 transition-transform'>
-        <p className='left-title'>playing</p>
-        {songCoverArt ? (
-          <Image
-            src={songCoverArt}
-            alt=''
-            className={cn('object-cover object-center', isRight && 'order-2')}
-            width={72}
-            height={72}
+    <div className='flex gap-4'>
+      {songCoverArt && (
+        <Image
+          src={songCoverArt}
+          alt=''
+          className={cn('object-cover object-center', isRight && 'order-2')}
+          width={72}
+          height={72}
+        />
+      )}
+      <div className='inline-flex flex-1 flex-col overflow-hidden'>
+        <h1
+          className='animate-scroll-half-text inline-flex w-min text-xl font-bold whitespace-nowrap'
+          style={{ animationPlayState }}>
+          {songTitle}
+          <div className='w-30' />
+          {songTitle}
+          <div className='w-30' />
+        </h1>
+        <p className='text-plate-subtle line-clamp-1 w-min text-sm whitespace-nowrap'>{songArtists}</p>
+        <div className='text-theme-love flex flex-1 items-center'>
+          <Icon
+            size={16}
+            className='mr-2'
           />
-        ) : (
-          <div className={cn('relative size-18', isRight && 'order-2')}>
-            <LoaderIcon
-              size={30}
-              className='absolute top-1/2 left-1/2 -translate-1/2'
+          <div className='bg-plate-overlay h-1 flex-1'>
+            <div
+              className='h-1 bg-current'
+              style={{ width: `${songProgress}%` }}
             />
           </div>
-        )}
-        <div className='inline-flex flex-1 flex-col overflow-hidden'>
-          <h1
-            className='animate-scroll-half-text inline-flex w-min text-xl font-bold whitespace-nowrap'
-            style={{ animationPlayState }}>
-            {songTitle}
-            {songTitle !== '...' && (
-              <>
-                <div className='w-30' />
-                {songTitle}
-                <div className='w-30' />
-              </>
-            )}
-          </h1>
-          <p className='text-plate-subtle line-clamp-1 w-min text-sm whitespace-nowrap'>{songArtists}</p>
-          <div className='text-theme-love flex flex-1 items-center'>
-            <Icon
-              size={16}
-              className='mx-2'
-            />
-            <div className='bg-plate-overlay h-1 flex-1'>
-              <div
-                className='h-1 bg-current'
-                style={{ width: `${songProgress}%` }}
-              />
-            </div>
-            <p className='mx-2 text-sm'>
-              {formatMsToMinutes(musicData?.progress ?? 0)} / {formatMsToMinutes(musicData?.duration ?? 0)}
-            </p>
-          </div>
+          <p className='mx-2 text-sm'>
+            {formatMsToMinutes(musicData?.progress ?? 0)} / {formatMsToMinutes(musicData?.duration ?? 0)}
+          </p>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'Tuna Widget',
@@ -8,7 +9,12 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
   <html lang='en'>
-    <body className='antialiased'>{children}</body>
+    <body className='bg-plate-base size-full p-3 antialiased'>
+      <div className='terminal-window border-theme-love m-0 size-full'>
+        <p className='left-title text-theme-love'>playing</p>
+        <Suspense>{children}</Suspense>
+      </div>
+    </body>
   </html>
 );
 
