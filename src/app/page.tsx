@@ -41,16 +41,13 @@ const Home = () => {
   const { width } = useWindowDimensions();
 
   useInterval(async () => {
-    try {
-      const data = await fetch('http://localhost:1608/').then((res) => {
+    const data = await fetch('http://localhost:1608/')
+      .then((res) => {
         if (!res.ok) notFound();
         return res.json();
-      });
-      setMusicData(data);
-    } catch (err) {
-      console.error(err);
-      notFound();
-    }
+      }, notFound)
+      .catch(notFound);
+    setMusicData(data);
   }, 1000);
 
   const Icon = isPaused ? PauseIcon : PlayIcon;
