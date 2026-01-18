@@ -56,7 +56,7 @@ const Home = () => {
 
       const title = data.title ?? data.alternativeTitle ?? '';
 
-      if (title) setAnimationPlayState(title.length <= 36 ? 'paused' : 'running');
+      if (title) setAnimationPlayState(title.length * 20 <= width ? 'paused' : 'running');
 
       setSongTitle(title);
       setSongArtists(data.artists);
@@ -65,9 +65,22 @@ const Home = () => {
       setSongProgress((data.progress / data.duration) * 100);
     };
     load();
-  }, [params, musicData]);
+  }, [params, musicData, width]);
 
   if (!songTitle) return <Loading />;
+
+  const titleElement = (
+    <>
+      {songTitle}
+      {songTitle.length * 20 > width && (
+        <>
+          <div style={{ width: `${width / 5}px` }} />
+          {songTitle}
+          <div style={{ width: `${width / 5}px` }} />
+        </>
+      )}
+    </>
+  );
 
   return (
     <div className='flex gap-4'>
@@ -76,6 +89,7 @@ const Home = () => {
           src={songCoverArt}
           alt=''
           className={cn('object-cover object-center', isRight && 'order-2')}
+          loading='eager'
           width={72}
           height={72}
         />
@@ -83,15 +97,8 @@ const Home = () => {
       <div className='inline-flex flex-1 flex-col justify-between overflow-hidden'>
         <h1
           className='animate-scroll-half-text inline-flex w-min text-xl font-bold whitespace-nowrap'
-          style={{ animationPlayState }}>
-          {songTitle}
-          {songTitle.length > width * 0.7 && (
-            <>
-              <div className='w-30' />
-              {songTitle}
-              <div className='w-30' />
-            </>
-          )}
+          style={{ animationPlayState, animationName: animationPlayState === 'paused' ? 'none' : undefined }}>
+          {titleElement}
         </h1>
         <p className='text-plate-subtle line-clamp-1 w-min text-sm whitespace-nowrap'>{songArtists}</p>
         {songTitle && (

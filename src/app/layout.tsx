@@ -4,7 +4,12 @@ import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'Tuna Widget',
-  description: '"Now PLaying" widget to use with the tuna-obs plugin'
+  description: '"Now PLaying" widget to use with the tuna-obs plugin',
+  icons: [
+    {
+      url: '/tuna-widget/favicon.png'
+    }
+  ]
 };
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
