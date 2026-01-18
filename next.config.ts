@@ -3,7 +3,10 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactCompiler: true,
   output: 'export',
-  images: { unoptimized: true }
+  images: { unoptimized: true },
+  basePath: '/tuna-widget',
+  assetPrefix: '/tuna-widget',
+  distDir: '/tuna-widget'
 };
 
 export default nextConfig;
