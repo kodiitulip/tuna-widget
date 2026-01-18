@@ -1,0 +1,112 @@
+@custom-variant moon (&:where([data-theme="moon"],[data-theme="moon"] *));
+@custom-variant dawn (&:where([data-theme="dawn"],[data-theme="dawn"] *));
+
+@theme {
+  --color-plate-base: oklch(0.213 0.025 291.131);
+  --color-plate-surface: oklch(0.241 0.032 289.136);
+  --color-plate-overlay: oklch(0.271 0.042 289.233);
+  --color-plate-muted: oklch(0.538 0.044 291.412);
+  --color-plate-subtle: oklch(0.654 0.044 291.232);
+  --color-plate-text: oklch(0.909 0.03 289.969);
+  --color-theme-love: oklch(0.698 0.156 4.224);
+  --color-theme-gold: oklch(0.843 0.11 74.602);
+  --color-theme-rose: oklch(0.836 0.054 21.141);
+  --color-theme-pine: oklch(0.528 0.079 227.716);
+  --color-theme-foam: oklch(0.822 0.054 209.559);
+  --color-theme-iris: oklch(0.776 0.095 304.994);
+  --color-highlight-low: oklch(0.251 0.026 287.616);
+  --color-highlight-med: oklch(0.372 0.036 291.097);
+  --color-highlight-high: oklch(0.44 0.039 290.417);
+
+  --color-moon-plate-base: oklch(0.26 0.039 287.73);
+  --color-moon-plate-surface: oklch(0.288 0.043 289.089);
+  --color-moon-plate-overlay: oklch(0.346 0.05 289.834);
+  --color-moon-plate-muted: oklch(0.538 0.044 291.412);
+  --color-moon-plate-subtle: oklch(0.654 0.044 291.232);
+  --color-moon-plate-text: oklch(0.909 0.03 289.969);
+  --color-moon-theme-love: oklch(0.698 0.156 4.224);
+  --color-moon-theme-gold: oklch(0.843 0.11 74.602);
+  --color-moon-theme-rose: oklch(0.765 0.097 21.919);
+  --color-moon-theme-pine: oklch(0.614 0.093 228.003);
+  --color-moon-theme-foam: oklch(0.822 0.054 209.559);
+  --color-moon-theme-iris: oklch(0.776 0.095 304.994);
+  --color-moon-highlight-low: oklch(0.289 0.04 287.801);
+  --color-moon-highlight-med: oklch(0.389 0.042 289.786);
+  --color-moon-highlight-high: oklch(0.454 0.045 291.018);
+
+  --color-dawn-plate-base: oklch(0.97 0.011 71.9);
+  --color-dawn-plate-surface: oklch(0.987 0.011 76.6);
+  --color-dawn-plate-overlay: oklch(0.939 0.015 64.338);
+  --color-dawn-plate-muted: oklch(0.673 0.027 298.37);
+  --color-dawn-plate-subtle: oklch(0.577 0.046 291.001);
+  --color-dawn-plate-text: oklch(0.46 0.063 289.556);
+  --color-dawn-theme-love: oklch(0.599 0.107 2.655);
+  --color-dawn-theme-gold: oklch(0.755 0.146 69.743);
+  --color-dawn-theme-rose: oklch(0.696 0.106 23.033);
+  --color-dawn-theme-pine: oklch(0.491 0.077 227.998);
+  --color-dawn-theme-foam: oklch(0.629 0.066 210.123);
+  --color-dawn-theme-iris: oklch(0.617 0.074 305.698);
+  --color-dawn-highlight-low: oklch(0.95 0.01 58.214);
+  --color-dawn-highlight-med: oklch(0.892 0.006 31.055);
+  --color-dawn-highlight-high: oklch(0.843 0.006 333.997);
+}
+
+@utility terminal-window {
+  @apply border-plate-subtle bg-plate-base relative m-2 border-2 p-2;
+
+  @variant moon {
+    @apply bg-moon-plate-base border-moon-plate-subtle;
+  }
+  @variant dawn {
+    @apply bg-dawn-plate-base border-dawn-plate-subtle;
+  }
+
+  & .left-title,
+  & .right-title {
+    @apply bg-plate-base text-plate-text absolute -top-2 px-1 text-xs;
+    @variant moon {
+      @apply bg-moon-plate-base text-moon-plate-subtle;
+    }
+    @variant dawn {
+      @apply bg-dawn-plate-base text-dawn-plate-subtle;
+    }
+  }
+
+  & .right-title {
+    @apply right-3 text-right;
+  }
+}
+
+@utility theme-bg-* {
+  background-color: --value(--color-*, [color]);
+  background-color: color-mix(in oklab, --value(--color-*, [color]) calc(--modifier(integer) * 1%), transparent);
+  @variant moon {
+    background-color: --value(--color-moon- *);
+    background-color: color-mix(
+      in oklab,
+      --value(--color-moon- *, [color]) calc(--modifier(integer) * 1%),
+      transparent
+    );
+  }
+  @variant dawn {
+    background-color: --value(--color-dawn- *);
+    background-color: color-mix(
+      in oklab,
+      --value(--color-dawn- *, [color]) calc(--modifier(integer) * 1%),
+      transparent
+    );
+  }
+}
+
+@utility theme-text-* {
+  color: --value(--color-*, [color]);
+  color: color-mix(in oklab, --value(--color-*, [color]) calc(--modifier(integer) * 1%), transparent);
+  @variant moon {
+    color: --value(--color-moon- *);
+    color: color-mix(in oklab, --value(--color-moon- *, [color]) calc(--modifier(integer) * 1%), transparent);
+  }
+  @variant dawn {
+    color: --value(--color-dawn- *);
+    color: color-mix(in oklab, --value(--color-dawn- *, [color]) calc(--modifier(integer) * 1%), transparent);
+  }
+}

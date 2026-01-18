@@ -1,0 +1,21 @@
+{
+  "arrowParens": "always",
+  "bracketSameLine": true,
+  "bracketSpacing": true,
+  "embeddedLanguageFormatting": "auto",
+  "endOfLine": "lf",
+  "experimentalOperatorPosition": "start",
+  "htmlWhitespaceSensitivity": "css",
+  "jsxSingleQuote": true,
+  "plugins": [
+    "prettier-plugin-tailwindcss"
+  ],
+  "printWidth": 120,
+  "proseWrap": "always",
+  "quoteProps": "consistent",
+  "semi": true,
+  "singleAttributePerLine": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "none"
+}

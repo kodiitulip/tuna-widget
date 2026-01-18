@@ -1,26 +1,43 @@
-@import "tailwindcss";
+@import 'https://mshaugh.github.io/nerdfont-webfonts/build/firamono.css';
+@import 'tailwindcss';
+@import './rose-pine.css';
+/* @import "tw-animate-css"; */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --animate-scroll-half-text: 15s linear 3s infinite scroll-half-text normal;
+
+  --font-fira-nf: 'FiraCode Nerd Font', 'sans';
+  --font-fira-nfp: 'FiraCode Nerd Font Propo', 'FiraCode Nerd Font', 'sans';
+  --font-fira-nfm: 'FiraCode Nerd Font Mono', 'FiraCode Nerd Font', 'mono';
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes scroll-half-text {
+  0% {
+    transform: translateX(0%);
+  }
+  80% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility -animation-delay-* {
+  animation-delay: calc(--value([integer]) * -1);
+}
+@utility animation-delay-* {
+  animation-delay: --value([integer]);
+}
+
+@layer base {
+  * {
+    @apply scroll-smooth;
+    scrollbar-width: thin;
+  }
+
+  html,
+  body {
+    @apply font-fira-nfm theme-text-plate-text h-full max-h-29 bg-transparent;
+  }
 }
