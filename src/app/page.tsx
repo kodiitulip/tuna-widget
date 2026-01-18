@@ -46,8 +46,8 @@ const Home = () => {
       .catch((error) => {
         console.error('Error: ', error);
         console.log('Server Not Found');
-        notFound();
       });
+    if (!data || !data.title) notFound();
     setMusicData(data);
   }, 1000);
 
