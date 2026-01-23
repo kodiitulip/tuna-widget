@@ -7,32 +7,43 @@ import { PauseIcon, PlayIcon } from 'lucide-react';
 import Image from 'next/image';
 import { notFound, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Loading from './loading';
+import { NoSong } from './loading';
+import QRCode from 'react-qr-code';
 
 type MusicMetadata = {
-  album: string;
-  album_url: string;
-  alternativeTitle: string;
-  artists: string[];
-  cover: string;
+  album?: string;
+  album_url?: string;
+  alternativeTitle?: string;
+  artists?: string[];
+  cover?: string;
   cover_path: string;
   cover_url: string;
-  duration: number;
+  duration?: number;
   playback_date: string;
   playback_time: string;
-  progress: number;
-  status: 'stopped' | 'playing';
-  status_id: number;
-  tags: string[];
+  progress?: number;
+  status: 'stopped' | 'playing' | 'unknown';
+  status_id: 3 | 2 | 1;
+  tags?: string[];
   title: string;
-  url: string;
+  url?: string;
+  lyrics?: string;
 };
 
 const Home = () => {
   const params = useSearchParams();
-  const [musicData, setMusicData] = useState<MusicMetadata>();
-  const [isRight, setIsRight] = useState<boolean>(false);
-  const [animationPlayState, setAnimationPlayState] = useState<'paused' | 'running'>('paused');
+  const [musicData, setMusicData] = useState<MusicMetadata>({
+    cover_path: 'n/a',
+    cover_url: 'http://localhost:1608/cover.png',
+    lyrics: 'n/a',
+    playback_date: '',
+    playback_time: '',
+    status: 'unknown',
+    status_id: 3,
+    title: '',
+  });
+  const [isRight] = useState<boolean>(() => (params.get('side') ?? 'left') === 'right');
+  const [qrCode] = useState<boolean>(() => params.get('qrcode') !== null);
   const [songTitle, setSongTitle] = useState<string>('');
   const [songArtists, setSongArtists] = useState<string[]>(['']);
   const [songCoverArt, setSongCoverArt] = useState<string>('');
@@ -47,8 +58,8 @@ const Home = () => {
       .catch((error) => {
         console.error('Error: ', error);
         console.log('Server Not Found');
+        setIsDown(true);
       });
-    setIsDown(!data || !data.title);
     setMusicData(data);
   }, 1000);
 
@@ -56,39 +67,21 @@ const Home = () => {
 
   useEffect(() => {
     const load = () => {
-      const side = params.get('side') ?? 'left';
-      setIsRight(side === 'right');
+      // const side = params.get('side') ?? 'left';
+      // setIsRight(side === 'right');
       const data = musicData;
       if (!data) return;
-
-      const title = data.title ?? data.alternativeTitle ?? '';
-
-      if (title) setAnimationPlayState(title.length * 20 <= width ? 'paused' : 'running');
-
-      setSongTitle(title);
-      setSongArtists(data.artists);
-      setIsPaused(data.status === 'stopped');
+      setSongTitle(data.title ?? data.alternativeTitle ?? '');
+      setSongArtists(data.artists ?? []);
+      setIsPaused(data.status !== 'playing');
       setSongCoverArt(data.cover_path);
-      setSongProgress((data.progress / data.duration) * 100);
+      setSongProgress(((data.progress ?? 1) / (data.duration ?? 1)) * 100);
     };
     load();
   }, [params, musicData, width]);
 
   if (isDown) notFound();
-  if (!songTitle) return <Loading />;
-
-  const titleElement = (
-    <>
-      {songTitle}
-      {songTitle.length * 20 > width && (
-        <>
-          <div style={{ width: `${width / 5}px` }} />
-          {songTitle}
-          <div style={{ width: `${width / 5}px` }} />
-        </>
-      )}
-    </>
-  );
+  if (musicData.status === 'unknown') return <NoSong />;
 
   return (
     <div className='flex gap-4'>
@@ -96,38 +89,63 @@ const Home = () => {
         <Image
           src={songCoverArt}
           alt=''
-          className={cn('object-cover object-center', isRight && 'order-2')}
+          className={cn('object-cover object-center', isRight && 'order-3')}
           loading='eager'
           width={72}
           height={72}
         />
       )}
-      <div className='inline-flex flex-1 flex-col justify-between overflow-hidden'>
-        <h1
-          className='animate-scroll-half-text inline-flex w-min text-xl font-bold whitespace-nowrap'
-          style={{ animationPlayState, animationName: animationPlayState === 'paused' ? 'none' : undefined }}>
-          {titleElement}
-        </h1>
+      <div className={cn('inline-flex flex-1 flex-col justify-between overflow-hidden', isRight && 'order-2')}>
+        <ScrollingSongTitle
+          songTitle={songTitle}
+          windowWidth={width}
+        />
         <p className='text-plate-subtle line-clamp-1 w-min text-sm whitespace-nowrap'>{songArtists}</p>
-        {songTitle && (
-          <div className='text-theme-love flex items-center'>
-            <Icon
-              size={16}
-              className='mr-2'
+        <div className='text-theme-love flex items-center'>
+          <Icon
+            size={16}
+            className='mr-2'
+          />
+          <div className='bg-plate-overlay h-1 flex-1'>
+            <div
+              className='h-1 bg-current'
+              style={{ width: `${songProgress}%` }}
             />
-            <div className='bg-plate-overlay h-1 flex-1'>
-              <div
-                className='h-1 bg-current'
-                style={{ width: `${songProgress}%` }}
-              />
-            </div>
-            <p className='mx-2 text-sm'>
-              {formatMsToMinutes(musicData?.progress ?? 0)} / {formatMsToMinutes(musicData?.duration ?? 0)}
-            </p>
           </div>
-        )}
+          <p className='mx-2 text-sm'>
+            {formatMsToMinutes(musicData?.progress ?? 0)} / {formatMsToMinutes(musicData?.duration ?? 0)}
+          </p>
+        </div>
       </div>
+      {qrCode && musicData.url && (
+        <div className={cn('border-theme-love flex size-18 items-center justify-center border', isRight && 'order-1')}>
+          <QRCode
+            value={musicData.url}
+            className='size-16'
+            width={72}
+            height={72}
+            bgColor='var(--color-theme-love)'
+            fgColor='var(--color-plate-base)'
+          />
+        </div>
+      )}
     </div>
+  );
+};
+
+const ScrollingSongTitle = ({ songTitle, windowWidth }: { songTitle: string; windowWidth: number }) => {
+  const shouldScroll = songTitle.length * 20 > windowWidth;
+  return (
+    <h1
+      className={cn(
+        'inline-flex w-min text-xl font-bold whitespace-nowrap',
+        shouldScroll && 'animate-scroll-half-text'
+      )}>
+      {songTitle}
+      <div style={{ width: `${windowWidth / 5}px` }} />
+      {shouldScroll && songTitle}
+      <div style={{ width: `${windowWidth / 5}px` }} />
+    </h1>
   );
 };
 
