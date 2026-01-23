@@ -39,6 +39,6 @@
 
   html,
   body {
-    @apply font-fira-nfm theme-text-plate-text h-full max-h-29 bg-transparent;
+    @apply font-fira-nfm theme-text-plate-text size-full bg-transparent;
   }
 }
