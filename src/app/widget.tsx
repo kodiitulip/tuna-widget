@@ -5,7 +5,7 @@ import { SearchParams } from './page';
 import { useInterval } from '@/hooks/use-interval';
 import Image from 'next/image';
 import { cn, formatMsToMinutes } from '@/lib/utils';
-import { PauseIcon, PlayIcon, QrCodeIcon, XIcon } from 'lucide-react';
+import { PauseIcon, PlayIcon, XIcon } from 'lucide-react';
 import { useWindowDimensions } from '@/hooks/use-window-dimentions';
 import QRCode from 'react-qr-code';
 import { notFound } from 'next/navigation';
@@ -60,111 +60,91 @@ export const MusicWidget = ({ searchParams }: Props) => {
   }, 1000);
 
   if (isDown) notFound();
-  if (musicData.status === 'unknown')
-    return (
-      <NoSong
-        qrcode={qrcode}
-        side={side}
-      />
-    );
-
+  const noSong = musicData.status === 'unknown';
   const coverArt = musicData.cover_path;
-  const Icon = musicData.status === 'stopped' ? PauseIcon : PlayIcon;
+  const Icon = noSong ? XIcon : musicData.status === 'stopped' ? PauseIcon : PlayIcon;
   const songProgress = (musicData.progress ?? 0) / (musicData.duration ?? 1);
+  const songProgressString =
+    formatMsToMinutes(musicData.progress ?? 0) + ' / ' + formatMsToMinutes(musicData.duration ?? 0);
 
   return (
-    <div className='terminal-window border-theme-love m-0 flex size-full gap-4'>
-      <p className='left-title text-theme-love'>{musicData.status}</p>
-      {coverArt && coverArt !== 'n/a' && (
-        <Image
-          src={coverArt}
-          alt=''
-          className={cn('object-cover object-center', side === 'right' && 'order-3')}
-          loading='eager'
-          width={72}
-          height={72}
-        />
-      )}
-      <div className={cn('inline-flex flex-1 flex-col justify-between overflow-hidden', side === 'right' && 'order-2')}>
-        <ScrollingSongTitle
-          songTitle={musicData.title ?? musicData.alternativeTitle ?? ''}
-          windowWidth={width}
-        />
-        <p className='text-plate-subtle line-clamp-1 w-min text-sm whitespace-nowrap'>{musicData.artists ?? []}</p>
-        <div className='text-theme-love flex items-center'>
-          <Icon
-            size={16}
-            className='mr-2'
-          />
-          <div className='bg-plate-overlay h-1 flex-1'>
-            <div
-              className='h-1 bg-current'
-              style={{ width: `${songProgress * 100}%` }}
-            />
-          </div>
-          <p className='mx-2 text-sm'>
-            {formatMsToMinutes(musicData?.progress ?? 0)} / {formatMsToMinutes(musicData?.duration ?? 0)}
-          </p>
-        </div>
-      </div>
-      {qrcode && musicData.url && (
-        <div
-          className={cn(
-            'border-theme-love flex size-18 items-center justify-center border',
-            side === 'right' && 'order-1'
-          )}>
-          <QRCode
-            value={musicData.url}
-            className='size-16'
+    <main
+      data-show={musicData.status === 'playing' || undefined}
+      className='bg-plate-base not-data-show:animate-out data-show:animate-in fade-in slide-in-from-top-8 fade-out slide-out-to-top-8 fill-mode-forwards relative size-full max-h-30 p-3 duration-500'>
+      <div className='terminal-window border-theme-love m-0 flex size-full gap-4'>
+        <p className='left-title text-theme-love'>{musicData.status}</p>
+        {coverArt && coverArt !== 'n/a' && (
+          <Image
+            src={coverArt}
+            alt=''
+            className={cn('object-cover object-center', side === 'right' && 'order-3')}
+            loading='eager'
             width={72}
             height={72}
-            bgColor='var(--color-theme-love)'
-            fgColor='var(--color-plate-base)'
           />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const NoSong = ({ qrcode, side }: { qrcode?: boolean; side?: 'left' | 'right' }) => {
-  return (
-    <div className='text-theme-love flex justify-between gap-4'>
-      <div className={cn('relative size-18', side === 'right' && 'order-3')}>
-        <i className='nf nf-md-robot_confused absolute top-1/2 left-1/2 -translate-1/2 text-4xl' />
-      </div>
-      <div className={cn('inline-flex flex-1 flex-col overflow-hidden', side === 'right' && 'order-2')}>
-        <div className='flex-1'>No Song</div>
-        <div className='flex items-center'>
-          <XIcon
-            size={16}
-            className='mr-2'
+        )}
+        <div
+          className={cn('inline-flex flex-1 flex-col justify-between overflow-hidden', side === 'right' && 'order-2')}>
+          <ScrollingSongTitle
+            songTitle={noSong ? 'No Song' : (musicData.title ?? musicData.alternativeTitle ?? '')}
+            windowWidth={width}
           />
-          <div className='bg-plate-overlay h-1 flex-1'></div>
-          <p className='mx-2 text-sm'>--:-- / --:--</p>
+          <p className='text-plate-subtle line-clamp-1 w-min text-sm whitespace-nowrap'>{musicData.artists ?? []}</p>
+          <div className='text-theme-love flex items-center'>
+            <Icon
+              size={16}
+              className='mr-2'
+            />
+            <div className='bg-plate-overlay h-1 flex-1'>
+              <div
+                className='h-1 bg-current'
+                style={{ width: `${songProgress * 100}%` }}
+              />
+            </div>
+            <p className='mx-2 text-sm transition'>{songProgressString}</p>
+          </div>
         </div>
+        {qrcode && musicData.url && (
+          <div className={cn('flex-centered size-18', side === 'right' && 'order-1')}>
+            <QRCode
+              value={musicData.url}
+              className='size-16'
+              width={72}
+              height={72}
+              bgColor='var(--color-theme-love)'
+              fgColor='var(--color-plate-base)'
+              aria-label='qrcode for the songs url'
+            />
+          </div>
+        )}
       </div>
-      {qrcode && (
-        <div className={cn('flex size-18 items-center justify-center', side === 'right' && 'order-1')}>
-          <QrCodeIcon size={32} />
-        </div>
-      )}
-    </div>
+    </main>
   );
 };
 
 const ScrollingSongTitle = ({ songTitle, windowWidth }: { songTitle: string; windowWidth: number }) => {
   const shouldScroll = songTitle.length * 20 > windowWidth;
   return (
-    <h1
-      className={cn(
-        'inline-flex w-min text-xl font-bold whitespace-nowrap',
-        shouldScroll && 'animate-scroll-half-text'
-      )}>
-      {songTitle}
-      <div style={{ width: `${windowWidth / 5}px` }} />
-      {shouldScroll && songTitle}
-      <div style={{ width: `${windowWidth / 5}px` }} />
-    </h1>
+    <div className='inline-flex text-xl font-bold whitespace-nowrap'>
+      <Title
+        title={songTitle}
+        scroll={shouldScroll}
+      />
+      {shouldScroll && (
+        <Title
+          title={songTitle}
+          scroll={shouldScroll}
+          ariaHidden
+        />
+      )}
+    </div>
   );
 };
+const Title = ({ title, ariaHidden, scroll }: { title: string; ariaHidden?: boolean; scroll: boolean }) => (
+  <h2
+    className={cn('inline-flex', scroll && 'animate-scroll-text repeat-infinite ease-linear')}
+    aria-hidden={ariaHidden}>
+    {title}
+    <div className='w-20' />
+  </h2>
+);

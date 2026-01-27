@@ -8,10 +8,10 @@ const getWindowDimensions = () => {
 
     return {
       width,
-      height
+      height,
     };
   } catch (err) {
-    return { width: 0, height: 0, error: err };
+    return { width: 1920, height: 1080, error: err };
   }
 };
 

@@ -13,9 +13,7 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
   <html lang='en'>
-    <body className='antialiased'>
-      <main className='bg-plate-base relative size-full max-h-30 p-3'>{children}</main>
-    </body>
+    <body className='bg-plate-base antialiased'>{children}</body>
   </html>
 );
 

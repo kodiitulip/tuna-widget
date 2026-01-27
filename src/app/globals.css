@@ -2,26 +2,31 @@
 @import 'https://mshaugh.github.io/nerdfont-webfonts/build/firamono.css';
 @import 'tailwindcss';
 @import './rose-pine.css';
-/* @import "tw-animate-css"; */
+@import 'tw-animate-css';
+
+@theme inline {
+  --animate-scroll-text: scroll-text var(--tw-animation-duration, var(--tw-duration, 20s)) var(--tw-ease, ease)
+    var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, infinite) var(--tw-animation-direction, normal)
+    var(--tw-animation-fill-mode, none);
+}
 
 @theme {
-  --animate-scroll-half-text: 15s linear 3s infinite scroll-half-text normal;
-
   --font-fira-nf: 'FiraCode Nerd Font', 'sans';
   --font-fira-nfp: 'FiraCode Nerd Font Propo', 'FiraCode Nerd Font', 'sans';
   --font-fira-nfm: 'FiraCode Nerd Font Mono', 'FiraCode Nerd Font', 'mono';
 }
 
-@keyframes scroll-half-text {
-  0% {
-    transform: translateX(0%);
+@keyframes scroll-text {
+  from {
+    transform: translateX(0);
   }
-  80% {
-    transform: translateX(-50%);
+  to {
+    transform: translateX(-100%);
   }
-  100% {
-    transform: translateX(-50%);
-  }
+}
+
+@utility flex-centered {
+  @apply flex items-center justify-center;
 }
 
 @utility -animation-delay-* {
